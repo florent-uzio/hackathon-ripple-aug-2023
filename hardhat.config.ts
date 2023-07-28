@@ -10,7 +10,7 @@ const config: HardhatUserConfig = {
   solidity: "0.8.19",
   // This is the XRPL EVM Sidechain network details
   networks: {
-    evm: {
+    xrpl: {
       url: "https://rpc-evm-poa-sidechain.peersyst.tech",
       chainId: 1440002,
       accounts: [PRIVATE_ACCOUNT_KEY],
