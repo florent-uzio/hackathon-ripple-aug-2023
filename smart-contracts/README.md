@@ -1,3 +1,3 @@
-# hackathon-ripple-aug-2023
+# Smart Contract
 
-Repo for the hackathon.
+EVM Smart contract
