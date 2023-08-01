@@ -4,7 +4,7 @@ import { getLocalStorageItem } from "../helpers"
 import { DataSignature } from "../models"
 import { TruncatedText } from "./truncated-text"
 
-const colWidths = [10, 20, 70]
+const colWidths = [5, 10, 85]
 
 export const SignaturesTable = () => {
   const signatures = getLocalStorageItem<DataSignature[]>(SIGNATURES) ?? []
