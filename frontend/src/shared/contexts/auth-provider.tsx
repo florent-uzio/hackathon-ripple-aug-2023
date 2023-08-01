@@ -5,6 +5,7 @@ import { AccountType, UserStorage } from "../models"
 
 export type AuthContextApi = {
   accountType?: AccountType
+  isAuthenticated: boolean
   username?: string
   refresh: () => void
 }
@@ -22,7 +23,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const value = getLocalStorageItem<UserStorage>("isAuthenticated")
     if (value) {
       console.log({ value })
-      setIsAuth(value)
+      setIsAuth({ ...value, isAuthenticated: true })
+    } else {
+      setIsAuth({} as UserStorage)
     }
   }
 
@@ -31,7 +34,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   })
 
   return (
-    <AuthContext.Provider value={{ ...isAuth, refresh: refreshAuth }}>
+    <AuthContext.Provider
+      value={{ ...isAuth, isAuthenticated: isAuth?.isAuthenticated ?? false, refresh: refreshAuth }}
+    >
       {children}
     </AuthContext.Provider>
   )

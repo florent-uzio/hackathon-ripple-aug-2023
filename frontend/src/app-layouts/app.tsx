@@ -1,6 +1,9 @@
 import { rippleTheme, useThemeSetup } from "@ripple/design-system"
-import { LoginPage } from "../pages"
+import { LoginPage, UserPage } from "../pages"
+import { AdminPage } from "../pages/admin-page"
 import { useAuth } from "../shared/contexts"
+import { AccountType } from "../shared/models"
+import { Header } from "./header"
 
 // global css for our render container to get the correct layout
 const localGlobalStyles = rippleTheme.globalCss({
@@ -15,13 +18,20 @@ const localGlobalStyles = rippleTheme.globalCss({
 export const App = () => {
   useThemeSetup()
   localGlobalStyles()
-  const { username } = useAuth()
+  const { username, accountType } = useAuth()
   console.log({ username })
 
   return (
     <>
       {/* <Header /> */}
-      {!!username ? <span>yes</span> : <LoginPage />}
+      {!!username ? (
+        <>
+          <Header />
+          {accountType === AccountType.Admin ? <AdminPage /> : <UserPage />}
+        </>
+      ) : (
+        <LoginPage />
+      )}
     </>
   )
 }
