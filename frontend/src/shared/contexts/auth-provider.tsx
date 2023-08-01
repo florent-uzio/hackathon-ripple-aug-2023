@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const refreshAuth = () => {
     const value = getLocalStorageItem<UserStorage>("isAuthenticated")
     if (value) {
-      console.log({ value })
       setIsAuth({ ...value, isAuthenticated: true })
     } else {
       setIsAuth({} as UserStorage)

@@ -7,33 +7,53 @@ import {
   TextField,
   useForm,
 } from "@ripple/design-system"
+import { genUID } from "@ripple/ui-helpers"
+import { useEffect } from "react"
+import { useWeb3 } from "../shared/contexts"
 import { Blockchain } from "../shared/models"
 
 const FORM_ID = "user-form"
 
 export const UserPage = () => {
-  const { formProps, getFieldProps, isFieldHidden } = useForm({
-    fields: {
-      blockchain: { type: "dropdown", value: Blockchain.XRPL },
-      publicKey: { type: "text" },
-      publicAddress: { type: "text" },
-      firstName: { type: "text" },
-      lastName: { type: "text" },
-      nonce: { type: "text" },
-    },
-    onFieldChange: {
-      blockchain: ({ value }, { updateFields }) => {
-        updateFields({
-          publicKey: {
-            hidden: value === Blockchain.ETH,
-          },
-        })
+  const uid = genUID()
+  const { currentAccount, signMessage } = useWeb3()
+
+  const { getValues, formProps, getFieldProps, isFieldHidden, updateFieldsConfig, isValid } =
+    useForm({
+      fields: {
+        blockchain: { type: "dropdown", value: Blockchain.XRPL },
+        publicKey: { type: "text" },
+        publicAddress: { type: "text" },
+        firstName: { type: "text" },
+        lastName: { type: "text" },
+        nonce: { type: "text", value: uid },
       },
-    },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2))
-    },
-  })
+      onFieldChange: {
+        blockchain: ({ value }, { updateFields }) => {
+          updateFields({
+            publicKey: {
+              hidden: value === Blockchain.ETH,
+            },
+          })
+        },
+      },
+      onSubmit: async (values) => {
+        const { firstName, lastName, nonce } = values
+        const message = JSON.stringify({ firstName, lastName, nonce })
+        const resultat = await signMessage(message)
+        console.log({ resultat })
+      },
+    })
+
+  const blockchainType = getValues().blockchain
+
+  useEffect(() => {
+    updateFieldsConfig({
+      publicAddress: {
+        value: blockchainType === Blockchain.ETH ? currentAccount : "",
+      },
+    })
+  }, [currentAccount, blockchainType])
 
   return (
     <Flex css={{ m: "auto" }} direction="column">
@@ -64,7 +84,9 @@ export const UserPage = () => {
         <FormRow>
           <TextField {...getFieldProps("nonce")} label="Nonce" />
         </FormRow>
-        <PrimaryButton css={{ w: "100%" }}>Sign Data With Metamask</PrimaryButton>
+        <PrimaryButton disabled={!isValid || currentAccount === ""} css={{ w: "100%" }}>
+          Sign Data With Metamask
+        </PrimaryButton>
       </form>
     </Flex>
   )

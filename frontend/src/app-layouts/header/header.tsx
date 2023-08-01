@@ -1,4 +1,4 @@
-import { Flex, SecondaryButton, Text } from "@ripple/design-system"
+import { Flex, RippleLogo, SecondaryButton, Text } from "@ripple/design-system"
 import { WalletButton } from "../../shared/components"
 import { IS_AUTHENTICATED } from "../../shared/constants"
 import { useAuth } from "../../shared/contexts"
@@ -24,16 +24,19 @@ export const Header = () => {
         boxShadow: "$medium",
       }}
     >
-      <Text
-        css={{
-          fontSize: "$600",
-          my: "auto",
-        }}
-      >
-        {accountType === AccountType.Admin
-          ? "Admin Compliance Investigation"
-          : "User Compliance Verification"}
-      </Text>
+      <Flex gap={3}>
+        <RippleLogo width={120} />
+        <Text
+          css={{
+            fontSize: "$600",
+            my: "auto",
+          }}
+        >
+          {accountType === AccountType.Admin
+            ? "Admin Compliance Investigation"
+            : "User Compliance Verification"}
+        </Text>
+      </Flex>
       <Flex gap={2} alignItems="center">
         <WalletButton />
         {isAuthenticated && <SecondaryButton onClick={logoutHandler}>Logout</SecondaryButton>}

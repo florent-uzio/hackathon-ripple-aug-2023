@@ -1,8 +1,12 @@
+import { ethers } from "ethers"
 import React, { createContext, useContext, useEffect, useState } from "react"
 
 type Web3ContextApi = {
   connectWallet: () => void
   currentAccount: string
+  signMessage: (
+    message: string,
+  ) => Promise<{ message: string; signatureHash: string; address: string } | undefined>
 }
 
 export const Web3Context = createContext<Web3ContextApi>({} as Web3ContextApi)
@@ -46,8 +50,26 @@ export const Web3Provider: React.FC<NFTProviderProps> = ({ children }) => {
     window.location.reload()
   }
 
+  const signMessage = async (message: string) => {
+    if (!window.ethereum) return
+
+    const provider = new ethers.BrowserProvider(window.ethereum)
+
+    const signer = await provider.getSigner()
+
+    const signatureHash = await signer.signMessage(message)
+
+    const address = await signer.getAddress()
+
+    return {
+      message,
+      signatureHash,
+      address,
+    }
+  }
+
   return (
-    <Web3Context.Provider value={{ connectWallet, currentAccount }}>
+    <Web3Context.Provider value={{ connectWallet, currentAccount, signMessage }}>
       {children}
     </Web3Context.Provider>
   )

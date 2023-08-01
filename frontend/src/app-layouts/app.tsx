@@ -19,11 +19,9 @@ export const App = () => {
   useThemeSetup()
   localGlobalStyles()
   const { username, accountType } = useAuth()
-  console.log({ username })
 
   return (
     <>
-      {/* <Header /> */}
       {!!username ? (
         <>
           <Header />
