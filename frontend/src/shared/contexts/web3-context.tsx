@@ -1,5 +1,6 @@
 import { ethers } from "ethers"
 import React, { createContext, useContext, useEffect, useState } from "react"
+import { Keccak } from "sha3"
 
 type Web3ContextApi = {
   connectWallet: () => void
@@ -52,14 +53,20 @@ export const Web3Provider: React.FC<NFTProviderProps> = ({ children }) => {
 
   const signMessage = async (message: string) => {
     if (!window.ethereum) return
-
     const provider = new ethers.BrowserProvider(window.ethereum)
 
     const signer = await provider.getSigner()
 
-    const signatureHash = await signer.signMessage(message)
+    const hash = new Keccak(256)
+    const hashMessage = hash.update(message).digest("hex")
 
     const address = await signer.getAddress()
+
+    // sign hashed message
+    const signatureHash = await window.ethereum.request({
+      method: "personal_sign",
+      params: [hashMessage, address],
+    })
 
     return {
       message,

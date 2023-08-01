@@ -9,8 +9,10 @@ import {
 } from "@ripple/design-system"
 import { genUID } from "@ripple/ui-helpers"
 import { useEffect } from "react"
+import { SIGNATURES } from "../shared/constants"
 import { useWeb3 } from "../shared/contexts"
-import { Blockchain } from "../shared/models"
+import { getLocalStorageItem, setLocalStorageItem } from "../shared/helpers"
+import { Blockchain, DataSignature } from "../shared/models"
 
 const FORM_ID = "user-form"
 
@@ -39,9 +41,16 @@ export const UserPage = () => {
       },
       onSubmit: async (values) => {
         const { firstName, lastName, nonce } = values
-        const message = JSON.stringify({ firstName, lastName, nonce })
+        // const message = JSON.stringify({ firstName, lastName, nonce })
+        const message = `${firstName}${lastName}${nonce}`
         const resultat = await signMessage(message)
-        console.log({ resultat })
+
+        if (resultat) {
+          const savedData: DataSignature = { ...resultat, nonce }
+          const previousSignatures = getLocalStorageItem<DataSignature[]>(SIGNATURES) ?? []
+
+          setLocalStorageItem(SIGNATURES, [...previousSignatures, savedData])
+        }
       },
     })
 
