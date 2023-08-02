@@ -9,11 +9,16 @@ type Web3ContextApi = {
   signMessage: (
     message: string,
   ) => Promise<{ message: string; signatureHash: string; address: string } | undefined>
-  verifyMessage: (message: string) => Promise<string | undefined>
+  verifyMessage: (
+    message: string,
+    signatureHash: string,
+    signingAddress: string,
+  ) => Promise<boolean | undefined>
 }
 
 // const VERIFY_ADDRESS = "0x002B03cc1Fa230aA2820e4938d000213a9071764"
-const VERIFY_ADDRESS = "0x2352701BFa6466811c06E040A6Fa647d278E5866"
+// const VERIFY_ADDRESS = "0x2352701BFa6466811c06E040A6Fa647d278E5866"
+const VERIFY_ADDRESS = "0x5a8E50CcD3d8ABb7F512f2f37cA148eB1962da63"
 
 export const Web3Context = createContext<Web3ContextApi>({} as Web3ContextApi)
 
@@ -80,7 +85,7 @@ export const Web3Provider: React.FC<NFTProviderProps> = ({ children }) => {
     }
   }
 
-  const verifyMessage = async (message: string) => {
+  const verifyMessage = async (message: string, signatureHash: string, signingAddress: string) => {
     if (!window.ethereum) return
     const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
@@ -93,7 +98,7 @@ export const Web3Provider: React.FC<NFTProviderProps> = ({ children }) => {
     // console.log({ ethNumSet: numSet })
 
     // todo: update
-    return await contract.getMessageHashV1(message, message, message)
+    return await contract.verifySignatureV1(message, signatureHash, signingAddress)
   }
 
   return (

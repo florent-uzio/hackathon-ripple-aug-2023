@@ -11,16 +11,16 @@ import {
 import { genUID } from "@ripple/ui-helpers"
 import { useEffect } from "react"
 import { SignaturesTable } from "../shared/components"
-import { SIGNATURES } from "../shared/constants"
 import { useWeb3 } from "../shared/contexts"
-import { getLocalStorageItem, setLocalStorageItem } from "../shared/helpers"
-import { Blockchain, DataSignature } from "../shared/models"
+import { useFirebase } from "../shared/hooks/use-firebase"
+import { Blockchain, DataSignature, DataSignatureStatus } from "../shared/models"
 
 const FORM_ID = "user-form"
 
 export const UserPage = () => {
   const uid = genUID()
   const { currentAccount, signMessage } = useWeb3()
+  const { addSignature, refresh } = useFirebase()
 
   const { getValues, formProps, getFieldProps, isFieldHidden, updateFieldsConfig, isValid } =
     useForm({
@@ -42,16 +42,19 @@ export const UserPage = () => {
         },
       },
       onSubmit: async (values) => {
-        const { firstName, lastName, nonce } = values
-        // const message = JSON.stringify({ firstName, lastName, nonce })
-        const message = `${firstName}${lastName}${nonce}`
-        const resultat = await signMessage(message)
+        const { nonce } = values
+
+        const resultat = await signMessage(nonce)
 
         if (resultat) {
-          const savedData: DataSignature = { ...resultat, nonce }
-          const previousSignatures = getLocalStorageItem<DataSignature[]>(SIGNATURES) ?? []
+          const savedData: DataSignature = {
+            ...resultat,
+            nonce,
+            status: DataSignatureStatus.Pending,
+          }
 
-          setLocalStorageItem(SIGNATURES, [...previousSignatures, savedData])
+          await addSignature(savedData)
+          await refresh()
         }
       },
     })

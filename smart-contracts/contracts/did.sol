@@ -2,53 +2,39 @@
 pragma solidity ^0.8.0;
 
 contract VerifyPII {
-    uint256 number;
 
-    function VerifyMessage(
-        bytes32 _hashedMessage,
-        uint8 _v,
-        bytes32 _r,
-        bytes32 _s
-    ) public pure returns (address) {
+    function VerifyMessage(bytes32 _hashedMessage, uint8 _v, bytes32 _r, bytes32 _s) public pure returns (address) {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHashMessage = keccak256(
-            abi.encodePacked(prefix, _hashedMessage)
-        );
+        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, _hashedMessage));
         address signer = ecrecover(prefixedHashMessage, _v, _r, _s);
         return signer;
     }
 
     function verifySignatureV1(
-        string memory _firstname,
-        string memory _lastname,
-        string memory _country,
+        string memory _message,
         bytes memory signature,
         address _signer
     ) public pure returns (bool) {
-        bytes32 messageHash = getMessageHashV1(_firstname, _lastname, _country);
+        bytes32 messageHash = getMessageHashV2(_message);
         bytes32 ethSignedMessageHash = getEthSignedMessageHashV1(messageHash);
 
         return recoverSigner(ethSignedMessageHash, signature) == _signer;
     }
 
     function getSignerAddressFromSignatureV1(
-        string memory _firstname,
-        string memory _lastname,
-        string memory _country,
+        string memory _message,
         bytes memory signature
     ) public pure returns (address) {
-        bytes32 messageHash = getMessageHashV1(_firstname, _lastname, _country);
+        bytes32 messageHash = getMessageHashV2(_message);
         bytes32 ethSignedMessageHash = getEthSignedMessageHashV1(messageHash);
 
         return recoverSigner(ethSignedMessageHash, signature);
     }
 
-    function getMessageHashV1(
-        string memory _firstname,
-        string memory _lastname,
-        string memory _country
+     function getMessageHashV2(
+        string memory _message
     ) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_firstname, _lastname, _country));
+        return keccak256(abi.encodePacked(_message));
     }
 
     function getEthSignedMessageHashV1(
@@ -60,12 +46,10 @@ contract VerifyPII {
         */
         return
             keccak256(
-                abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    _messageHash
-                )
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash)
             );
     }
+
 
     function recoverSigner(
         bytes32 _ethSignedMessageHash,
@@ -100,22 +84,5 @@ contract VerifyPII {
         }
 
         // implicitly return (r, s, v)
-    }
-
-    
-    /**
-     * @dev Store value in variable
-     * @param num value to store
-     */
-    function store(uint256 num) public {
-        number = num;
-    }
-
-    /**
-     * @dev Return value 
-     * @return value of 'number'
-     */
-    function retrieve() public view returns (uint256){
-        return number;
     }
 }
