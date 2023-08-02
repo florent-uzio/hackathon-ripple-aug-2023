@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 contract VerifyPII {
+    uint256 number;
+
     function VerifyMessage(
         bytes32 _hashedMessage,
         uint8 _v,
@@ -98,5 +100,22 @@ contract VerifyPII {
         }
 
         // implicitly return (r, s, v)
+    }
+
+    
+    /**
+     * @dev Store value in variable
+     * @param num value to store
+     */
+    function store(uint256 num) public {
+        number = num;
+    }
+
+    /**
+     * @dev Return value 
+     * @return value of 'number'
+     */
+    function retrieve() public view returns (uint256){
+        return number;
     }
 }
