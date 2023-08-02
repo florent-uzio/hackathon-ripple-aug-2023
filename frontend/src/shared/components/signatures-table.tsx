@@ -7,13 +7,13 @@ import {
   Text,
   useMultiTriggerModal,
 } from "@ripple/design-system"
-import { useAuth, useWeb3 } from "../contexts"
-import { useFirebase } from "../hooks/use-firebase"
+import { useState } from "react"
+import { useAuth, useFirebase, useWeb3 } from "../contexts"
 import { AccountType, DataSignature, DataSignatureStatus } from "../models"
 import { DeleteSignatureModal } from "./delete-signature-modal"
 import { TruncatedText } from "./truncated-text"
 
-const colWidths = [15, 10, 25, 20, 10, 10]
+const colWidths = [10, 20, 20, 20, 10, 10]
 
 const getChipType = (status: DataSignatureStatus): ChipType => {
   switch (status) {
@@ -36,8 +36,9 @@ const getChipType = (status: DataSignatureStatus): ChipType => {
 export const SignaturesTable = () => {
   const { accountType, isAuthenticated } = useAuth()
   const { verifyMessage, currentAccount } = useWeb3()
-  const { signatures = [] } = useFirebase()
+  const { signatures = [], updateSignature } = useFirebase()
   const { modalData, modalProps, registerMenuAction } = useMultiTriggerModal<DataSignature>()
+  const [isVerifying, setIsVerifying] = useState(false)
 
   if (signatures.length === 0) {
     return <Text>No Signatures Yet</Text>
@@ -62,13 +63,22 @@ export const SignaturesTable = () => {
               disabled: currentAccount === "",
               label: "Verify",
               onSelect: async () => {
+                setIsVerifying(true)
                 const result = await verifyMessage(
                   signature.nonce,
                   signature.signatureHash,
                   signature.address,
                 )
+                setIsVerifying(false)
+                if (!signature.id) return
+
+                await updateSignature(signature.id, {
+                  status: result ? DataSignatureStatus.Completed : DataSignatureStatus.Failed,
+                })
               },
             }
+
+            const isVerified = signature.status === DataSignatureStatus.Completed
 
             const actions: ActionCellActions = canVerify
               ? [verifyAction]
@@ -85,7 +95,9 @@ export const SignaturesTable = () => {
                 <Table.Cell>
                   <TruncatedText text={signature.id} />
                 </Table.Cell>
-                <Table.Cell>{signature.nonce}</Table.Cell>
+                <Table.Cell>
+                  <TruncatedText text={signature.nonce} />
+                </Table.Cell>
                 <Table.Cell>
                   <TruncatedText text={signature.signatureHash} />
                 </Table.Cell>
@@ -95,7 +107,7 @@ export const SignaturesTable = () => {
                 <Table.Cell>
                   <Chip text={signature.status} type={getChipType(signature.status)} />
                 </Table.Cell>
-                <Table.ActionCell actions={actions} />
+                {!isVerified && <Table.ActionCell actions={actions} />}
               </Table.Row>
             )
           })}

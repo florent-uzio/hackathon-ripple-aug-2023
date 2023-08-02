@@ -8,17 +8,15 @@ import {
   TextField,
   useForm,
 } from "@ripple/design-system"
-import { genUID } from "@ripple/ui-helpers"
 import { useEffect } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { SignaturesTable } from "../shared/components"
-import { useWeb3 } from "../shared/contexts"
-import { useFirebase } from "../shared/hooks/use-firebase"
+import { useFirebase, useWeb3 } from "../shared/contexts"
 import { Blockchain, DataSignature, DataSignatureStatus } from "../shared/models"
 
 const FORM_ID = "user-form"
 
 export const UserPage = () => {
-  const uid = genUID()
   const { currentAccount, signMessage } = useWeb3()
   const { addSignature, refresh } = useFirebase()
 
@@ -30,7 +28,7 @@ export const UserPage = () => {
         publicAddress: { type: "text" },
         // firstName: { type: "text" },
         // lastName: { type: "text" },
-        nonce: { type: "text", value: uid },
+        nonce: { type: "text", value: uuidv4() },
       },
       onFieldChange: {
         blockchain: ({ value }, { updateFields }) => {
@@ -55,6 +53,11 @@ export const UserPage = () => {
 
           await addSignature(savedData)
           await refresh()
+          updateFieldsConfig({
+            nonce: {
+              value: uuidv4(),
+            },
+          })
         }
       },
     })

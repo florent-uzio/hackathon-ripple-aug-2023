@@ -1,6 +1,5 @@
 import { ConfirmationModal, ModalControlModalProps } from "@ripple/design-system"
-
-import { useFirebase } from "../hooks/use-firebase"
+import { useFirebase } from "../contexts"
 
 export type WorkItemCancelTriggerProps = {
   id?: string
