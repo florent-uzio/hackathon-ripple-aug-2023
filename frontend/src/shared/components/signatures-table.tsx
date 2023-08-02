@@ -3,6 +3,7 @@ import {
   ActionCellActions,
   Chip,
   ChipType,
+  Loader,
   Table,
   Text,
   useMultiTriggerModal,
@@ -69,12 +70,16 @@ export const SignaturesTable = () => {
                   signature.signatureHash,
                   signature.address,
                 )
-                setIsVerifying(false)
-                if (!signature.id) return
+
+                if (!signature.id) {
+                  setIsVerifying(false)
+                  return
+                }
 
                 await updateSignature(signature.id, {
                   status: result ? DataSignatureStatus.Completed : DataSignatureStatus.Failed,
                 })
+                setIsVerifying(false)
               },
             }
 
@@ -113,6 +118,7 @@ export const SignaturesTable = () => {
           })}
         </Table.Body>
       </Table>
+      {isVerifying && <Loader css={{ my: 2 }} />}
       <DeleteSignatureModal {...modalProps} {...modalData} />
     </>
   )
