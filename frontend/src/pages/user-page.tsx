@@ -75,7 +75,10 @@ export const UserPage = () => {
   return (
     <>
       <Flex css={{ m: "auto" }} direction="column">
-        <Heading css={{ mb: 2 }} level={4}>
+        <Heading css={{ mx: "auto" }} level={1}>
+          {import.meta.env.VITE_TITLE}
+        </Heading>
+        <Heading css={{ my: 3 }} level={4}>
           Enter your data
         </Heading>
         <form id={FORM_ID} {...formProps}>

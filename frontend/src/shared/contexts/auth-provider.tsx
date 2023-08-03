@@ -6,7 +6,8 @@ import { AccountType, UserStorage } from "../models"
 export type AuthContextApi = {
   accountType?: AccountType
   isAuthenticated: boolean
-  username?: string
+  // username?: string
+  did?: string
   refresh: () => void
 }
 

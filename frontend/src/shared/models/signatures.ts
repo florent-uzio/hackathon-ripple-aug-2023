@@ -5,6 +5,7 @@ export type DataSignature = {
   signatureHash: string
   nonce: string
   status: DataSignatureStatus
+  txnHash?: string
 }
 
 export enum DataSignatureStatus {
