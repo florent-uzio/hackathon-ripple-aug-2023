@@ -12,6 +12,7 @@ import { useState } from "react"
 import { useAuth, useFirebase, useWeb3 } from "../contexts"
 import { AccountType, DataSignature, DataSignatureStatus } from "../models"
 import { DeleteSignatureModal } from "./delete-signature-modal"
+import { ExternalLink } from "./external-link"
 import { TruncatedText } from "./truncated-text"
 
 const colWidths = [10, 20, 20, 20, 10, 10]
@@ -36,7 +37,7 @@ const getChipType = (status: DataSignatureStatus): ChipType => {
 
 export const SignaturesTable = () => {
   const { accountType, isAuthenticated } = useAuth()
-  const { verifyMessage, currentAccount } = useWeb3()
+  const { verifyMessage, currentAccount, getStatus } = useWeb3()
   const { signatures = [], updateSignature } = useFirebase()
   const { modalData, modalProps, registerMenuAction } = useMultiTriggerModal<DataSignature>()
   const [isVerifying, setIsVerifying] = useState(false)
@@ -55,6 +56,7 @@ export const SignaturesTable = () => {
           <Table.HeaderCell>Nonce</Table.HeaderCell>
           <Table.HeaderCell>Signature Hash</Table.HeaderCell>
           <Table.HeaderCell>Public Address</Table.HeaderCell>
+          <Table.HeaderCell>Txn Hash</Table.HeaderCell>
           <Table.HeaderCell>Status</Table.HeaderCell>
           <Table.HeaderCell></Table.HeaderCell>
         </Table.Header>
@@ -65,25 +67,30 @@ export const SignaturesTable = () => {
               label: "Verify",
               onSelect: async () => {
                 setIsVerifying(true)
-                const result = await verifyMessage(
+                const verifyResp = await verifyMessage(
                   signature.nonce,
                   signature.signatureHash,
                   signature.address,
                 )
+                console.log({ verifyResp })
 
                 if (!signature.id) {
                   setIsVerifying(false)
                   return
                 }
 
+                const result = await getStatus(signature.address)
+                console.log({ result })
+
                 await updateSignature(signature.id, {
                   status: result ? DataSignatureStatus.Completed : DataSignatureStatus.Failed,
+                  txnHash: verifyResp?.hash,
                 })
                 setIsVerifying(false)
               },
             }
 
-            const isVerified = signature.status === DataSignatureStatus.Completed
+            const isVerified = signature.status !== DataSignatureStatus.Pending
 
             const actions: ActionCellActions = canVerify
               ? [verifyAction]
@@ -108,6 +115,14 @@ export const SignaturesTable = () => {
                 </Table.Cell>
                 <Table.Cell>
                   <TruncatedText text={signature.address} />
+                </Table.Cell>
+                <Table.Cell>
+                  <TruncatedText
+                    as={ExternalLink}
+                    text={signature.txnHash}
+                    size="sm"
+                    href={`https://evm-poa-sidechain.peersyst.tech/tx/${signature.txnHash}`}
+                  />
                 </Table.Cell>
                 <Table.Cell>
                   <Chip text={signature.status} type={getChipType(signature.status)} />

@@ -18,11 +18,11 @@ const localGlobalStyles = rippleTheme.globalCss({
 export const App = () => {
   useThemeSetup()
   localGlobalStyles()
-  const { username, accountType } = useAuth()
+  const { did, accountType } = useAuth()
 
   return (
     <>
-      {!!username ? (
+      {!!did ? (
         <>
           <Header />
           {accountType === AccountType.Admin ? <AdminPage /> : <UserPage />}

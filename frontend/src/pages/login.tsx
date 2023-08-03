@@ -5,7 +5,6 @@ import {
   FormRow,
   Heading,
   PrimaryButton,
-  SecretField,
   TextField,
   useForm,
 } from "@ripple/design-system"
@@ -19,15 +18,16 @@ export const LoginPage = () => {
   const { refresh } = useAuth()
   const { formProps, getFieldProps, isValid } = useForm({
     fields: {
-      username: { type: "email" },
-      password: { type: "text" },
+      // username: { type: "email" },
+      // password: { type: "text" },
+      did: { type: "text", value: "did:xrpl:1:rJJtjC4KtFrr9jZi87wc6zM7XXE3c7hqBZ" },
       accountType: { type: "dropdown" },
     },
     onSubmit: (values) => {
-      const { accountType, username } = values
+      const { accountType, did } = values
 
       setLocalStorageItem("isAuthenticated", {
-        username,
+        did,
         accountType,
       })
       refresh()
@@ -39,8 +39,12 @@ export const LoginPage = () => {
       css={{
         m: "auto",
       }}
+      direction="column"
     >
-      <Card css={{ minW: 450 }}>
+      <Heading css={{ mx: "auto" }} level={1}>
+        {import.meta.env.VITE_TITLE}
+      </Heading>
+      <Card css={{ minW: 450, mt: 3 }}>
         <Heading level={3} css={{ mb: 2 }}>
           Please login
         </Heading>
@@ -52,11 +56,14 @@ export const LoginPage = () => {
             </DropdownField>
           </FormRow>
           <FormRow>
+            <TextField {...getFieldProps("did")} label="DID" />
+          </FormRow>
+          {/* <FormRow>
             <TextField {...getFieldProps("username")} label="Username" />
           </FormRow>
           <FormRow>
             <SecretField {...getFieldProps("password")} label="Password" />
-          </FormRow>
+          </FormRow> */}
           <PrimaryButton css={{ w: "100%" }} disabled={!isValid} type="submit">
             Login
           </PrimaryButton>
