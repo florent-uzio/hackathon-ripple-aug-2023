@@ -36,7 +36,7 @@ const getChipType = (status: DataSignatureStatus): ChipType => {
 
 export const SignaturesTable = () => {
   const { accountType, isAuthenticated } = useAuth()
-  const { verifyMessage, currentAccount } = useWeb3()
+  const { verifyMessage, currentAccount, getStatus } = useWeb3()
   const { signatures = [], updateSignature } = useFirebase()
   const { modalData, modalProps, registerMenuAction } = useMultiTriggerModal<DataSignature>()
   const [isVerifying, setIsVerifying] = useState(false)
@@ -65,16 +65,20 @@ export const SignaturesTable = () => {
               label: "Verify",
               onSelect: async () => {
                 setIsVerifying(true)
-                const result = await verifyMessage(
+                const verifyResp = await verifyMessage(
                   signature.nonce,
                   signature.signatureHash,
                   signature.address,
                 )
+                console.log({ verifyResp })
 
                 if (!signature.id) {
                   setIsVerifying(false)
                   return
                 }
+
+                const result = await getStatus(signature.address)
+                console.log({ result })
 
                 await updateSignature(signature.id, {
                   status: result ? DataSignatureStatus.Completed : DataSignatureStatus.Failed,
@@ -83,7 +87,7 @@ export const SignaturesTable = () => {
               },
             }
 
-            const isVerified = signature.status === DataSignatureStatus.Completed
+            const isVerified = signature.status !== DataSignatureStatus.Pending
 
             const actions: ActionCellActions = canVerify
               ? [verifyAction]

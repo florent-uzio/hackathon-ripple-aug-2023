@@ -28,9 +28,11 @@ export interface VerifyPIIInterface extends Interface {
       | "getEthSignedMessageHashV1"
       | "getMessageHashV2"
       | "getSignerAddressFromSignatureV1"
+      | "getVerifiedIdentityStatus"
       | "recoverSigner"
       | "splitSignature"
       | "verifySignatureV1"
+      | "verifySignatureV2"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -50,6 +52,10 @@ export interface VerifyPIIInterface extends Interface {
     values: [string, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "getVerifiedIdentityStatus",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "recoverSigner",
     values: [BytesLike, BytesLike]
   ): string;
@@ -59,6 +65,10 @@ export interface VerifyPIIInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "verifySignatureV1",
+    values: [string, BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "verifySignatureV2",
     values: [string, BytesLike, AddressLike]
   ): string;
 
@@ -79,6 +89,10 @@ export interface VerifyPIIInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getVerifiedIdentityStatus",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "recoverSigner",
     data: BytesLike
   ): Result;
@@ -88,6 +102,10 @@ export interface VerifyPIIInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "verifySignatureV1",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verifySignatureV2",
     data: BytesLike
   ): Result;
 }
@@ -155,6 +173,12 @@ export interface VerifyPII extends BaseContract {
     "view"
   >;
 
+  getVerifiedIdentityStatus: TypedContractMethod<
+    [_signer: AddressLike],
+    [boolean],
+    "view"
+  >;
+
   recoverSigner: TypedContractMethod<
     [_ethSignedMessageHash: BytesLike, _signature: BytesLike],
     [string],
@@ -171,6 +195,12 @@ export interface VerifyPII extends BaseContract {
     [_message: string, signature: BytesLike, _signer: AddressLike],
     [boolean],
     "view"
+  >;
+
+  verifySignatureV2: TypedContractMethod<
+    [_message: string, signature: BytesLike, _signer: AddressLike],
+    [boolean],
+    "nonpayable"
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
@@ -198,6 +228,9 @@ export interface VerifyPII extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "getVerifiedIdentityStatus"
+  ): TypedContractMethod<[_signer: AddressLike], [boolean], "view">;
+  getFunction(
     nameOrSignature: "recoverSigner"
   ): TypedContractMethod<
     [_ethSignedMessageHash: BytesLike, _signature: BytesLike],
@@ -217,6 +250,13 @@ export interface VerifyPII extends BaseContract {
     [_message: string, signature: BytesLike, _signer: AddressLike],
     [boolean],
     "view"
+  >;
+  getFunction(
+    nameOrSignature: "verifySignatureV2"
+  ): TypedContractMethod<
+    [_message: string, signature: BytesLike, _signer: AddressLike],
+    [boolean],
+    "nonpayable"
   >;
 
   filters: {};
