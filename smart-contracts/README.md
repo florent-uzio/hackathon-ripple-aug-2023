@@ -11,7 +11,7 @@ You can find it in `contracts/did.sol`.
 1. Run `npm i`.
 2. Copy `.env.example` and rename it to `.env`
 3. We need to get the private key of your metamask account to deploy the contract. Follow this [link](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) to know how to export the private key from metamask.
-4. Paste your exported private key in the `.env` file. Make sure there are no space after the `=` sign.
+4. Paste your exported private key in the `.env` file (the key is called `PRIVATE_KEY`). Make sure there are no space after the `=` sign.
 
 ## Deployment
 
