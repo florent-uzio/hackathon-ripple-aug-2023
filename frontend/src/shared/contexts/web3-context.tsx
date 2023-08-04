@@ -17,11 +17,7 @@ type Web3ContextApi = {
   getStatus: (address: string) => Promise<boolean | undefined>
 }
 
-// Working before adding txn in Smart Contract
-// const VERIFY_ADDRESS = "0x5a8E50CcD3d8ABb7F512f2f37cA148eB1962da63"
-
-// With mapping in SC
-const VERIFY_ADDRESS = "0x2E9C3072484cff90901712897aDf5e3D39019D36"
+const VERIFY_ADDRESS = import.meta.env.VITE_SMART_CONTRACT_ADDRESS
 
 export const Web3Context = createContext<Web3ContextApi>({} as Web3ContextApi)
 
@@ -93,15 +89,8 @@ export const Web3Provider: React.FC<NFTProviderProps> = ({ children }) => {
     const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
 
-    // const contract = new ethers.Contract(VERIFY_ADDRESS, VerifyPII.abi, provider)
     const contract = VerifyPII__factory.connect(VERIFY_ADDRESS, signer)
 
-    // await contract.store(10)
-    // const numSet = await contract.retrieve()
-    // console.log({ ethNumSet: numSet })
-
-    // todo: update
-    // return await contract.verifySignatureV1(message, signatureHash, signingAddress)
     const resp = await contract.verifySignatureV2(message, signatureHash, signingAddress)
     return resp
   }

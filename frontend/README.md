@@ -1,27 +1,39 @@
-# React + TypeScript + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application is the React frontend interacting with the Solidity Smart Contract.
 
-Currently, two official plugins are available:
+It is written using [Vite.js](https://vitejs.dev/) and [Ripple design system](https://ripple.github.io/ui-toolkit/?path=/docs/about--docs).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
 
-## Expanding the ESLint configuration
+Follow the steps:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. cd into `frontend`
+2. Run `npm install` (Node 16 was used for this repo)
+3. Copy `.env.local.example` and rename the copy to `.env.local`
+4. In `.env.local` edit all the blank values. Make sure that no space is after the `=` sign.
 
-- Configure the top-level `parserOptions` property like this:
+```
+VITE_API_KEY=
+VITE_AUTH_DOMAIN=
+VITE_PROJECT_ID=
+VITE_STORAGE_BUCKET=
+VITE_MESSAGING_SENDER_ID=
+VITE_APP_ID=
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+VITE_TITLE=WalletID
+
+VITE_SMART_CONTRACT_ADDRESS=
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+You can create a new Google Firestore Database and get the connection details for the `.env.local` file.
+From 8:50, you can see how to create that Firestore Database in this [YouTube video](https://www.youtube.com/watch?v=jCY6DH8F4oc&t=530s).
+
+Once the firstore database is created, make sure to create a `signatures` collection in it.
+
+![signatures](./assets//signatures-collection.png)
+
+Check the Smart Contract [readme](../smart-contracts/README.md) to know how to get your smart contract address.
+
+5. Start the app with `npm run dev`
+6. See the application running at `http://localhost:5173`
